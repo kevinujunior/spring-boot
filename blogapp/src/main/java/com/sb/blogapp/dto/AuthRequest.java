@@ -1,0 +1,17 @@
+package com.sb.blogapp.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class AuthRequest {
+    @NotBlank
+    private String username;
+
+
+    @NotBlank
+    private String password;
+}

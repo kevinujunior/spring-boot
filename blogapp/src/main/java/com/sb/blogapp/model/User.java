@@ -1,6 +1,8 @@
 package com.sb.blogapp.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,6 +15,7 @@ import jakarta.validation.constraints.NotEmpty;
 
 @Data
 @Entity
+@AllArgsConstructor
 public class User{
 
 
@@ -23,7 +26,7 @@ public class User{
     @GeneratedValue(strategy = GenerationType.SEQUENCE )
     private Long id;
 
-    @NotEmpty(message = "Please enter the username")
+    @NotBlank(message = "Please enter the username")
     @Length(min = MIN_USERNAME_LENGTH, message = "Username must be at least " + MIN_USERNAME_LENGTH + " characters long")
     @Column(unique = true,nullable = false)
     private String username;
@@ -31,19 +34,16 @@ public class User{
 
     @JsonIgnore
     @Length(min = MIN_PASSWORD_LENGTH, message = "Password must be at least " + MIN_PASSWORD_LENGTH + " characters long")
-    @NotEmpty(message = "Please enter the password")
+    @NotBlank(message = "Please enter the password")
     @Column(nullable = false)
     private String password;
 
-
-    @Column(nullable=false)
-    private Boolean enabled;
 
     //one-to-many relation
     //one user to many posts
     //first part of relation is used for current entity
     //cascade means deletion type here all means if a user is deleted all posts will be deleted
-    //orphanRemoval means if parent doesn't exist child will automatically removed
+    //orphanRemoval -> parent doesn't exist child will be automatically removed
     //mappedBy is the inverse side of fk which means fk doesn't lie in this entity
     @OneToMany(
             mappedBy = "user",
@@ -52,6 +52,12 @@ public class User{
     )
     private List<Post> posts = new ArrayList<>();
 
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Comment> comments = new ArrayList<>();
 
 
 }

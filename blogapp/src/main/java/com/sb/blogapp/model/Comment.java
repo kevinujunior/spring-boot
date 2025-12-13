@@ -1,6 +1,7 @@
 package com.sb.blogapp.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Data
 @Entity
+@AllArgsConstructor
 public class Comment {
 
     @Id
@@ -27,6 +29,8 @@ public class Comment {
     private Post post;
 
     //One user can have multiple comments
+    //@aTob a lies on this side b to the referenced side
+    //for example @ManyToOne (many of this entity to one of referenced entity)
     @ManyToOne
     @JoinColumn(name="user_id",referencedColumnName ="id", nullable = false)
     private User user;
