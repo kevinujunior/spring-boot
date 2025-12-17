@@ -1,49 +1,57 @@
 package com.sb.blogapp.config;
-import com.sb.blogapp.service.UserService;
-import com.sb.blogapp.model.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.*;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
-@Component @RequiredArgsConstructor
+@Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
-    private final UserService userService;
+    private final UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, jakarta.servlet.ServletException {
+
         final String authHeader = request.getHeader("Authorization");
-        String username = null;
-        String token = null;
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);
-            if (jwtUtil.validate(token)) {
-                username = jwtUtil.extractUsername(token);
+
+        // 1. Early exit if header is missing or malformed
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        final String token = authHeader.substring(7);
+        final String username = jwtUtil.extractUsername(token);
+
+        // 2. Validate token and check if already authenticated
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+            if (jwtUtil.validate(token)) { // Assume your JwtUtil has this check
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
+                );
+
+                // 3. Set Web-specific authentication details
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                // 4. Set the final Authentication object
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            String finalUsername = username;
-            UserDetails userDetails = new UserDetails() {
-                private final User u = userService.findByUsername(finalUsername).orElse(null);
-                @Override public java.util.Collection<? extends org.springframework.security.core.GrantedAuthority> getAuthorities() { return java.util.List.of(); }
-                @Override public String getPassword() { return u == null ? null : u.getPassword(); }
-                @Override public String getUsername() { return finalUsername; }
-                @Override public boolean isAccountNonExpired() { return true; }
-                @Override public boolean isAccountNonLocked() { return true; }
-                @Override public boolean isCredentialsNonExpired() { return true; }
-                @Override public boolean isEnabled() { return true; }
-            };
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(auth);
-        }
+
         chain.doFilter(request, response);
     }
 }
+

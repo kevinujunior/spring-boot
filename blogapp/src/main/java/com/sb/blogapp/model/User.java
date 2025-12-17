@@ -15,13 +15,17 @@ import jakarta.validation.constraints.NotEmpty;
 
 @Data
 @Entity
-@AllArgsConstructor
 public class User{
 
 
     private static final int MIN_USERNAME_LENGTH = 3;
     private static final int MIN_PASSWORD_LENGTH = 8;
 
+
+    public User(String username, String password){
+        this.username = username;
+        this.password = password;
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE )
     private Long id;
