@@ -2,7 +2,6 @@ package com.sb.blogapp.model;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -11,7 +10,6 @@ import java.util.List;
 
 @Data
 @Entity
-@AllArgsConstructor
 public class Post {
 
     @Id
