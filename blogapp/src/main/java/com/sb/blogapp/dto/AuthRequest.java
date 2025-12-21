@@ -8,10 +8,10 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthRequest {
-    @NotBlank
+    @NotBlank(message = "Username is required and cannot be empty")
     private String username;
 
 
-    @NotBlank
+    @NotBlank(message = "Password is required")
     private String password;
 }

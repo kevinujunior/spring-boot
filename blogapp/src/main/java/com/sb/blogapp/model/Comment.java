@@ -1,16 +1,17 @@
 package com.sb.blogapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Data
 @Entity
+@NoArgsConstructor
 public class Comment {
 
     @Id
@@ -25,6 +26,7 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "post_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnore
     private Post post;
 
     //One user can have multiple comments
@@ -32,7 +34,8 @@ public class Comment {
     //for example @ManyToOne (many of this entity to one of referenced entity)
     @ManyToOne
     @JoinColumn(name="user_id",referencedColumnName ="id", nullable = false)
-    private User user;
+    @JsonIgnoreProperties({"posts", "comments"})
+    private BlogUser blogUser;
 
 
 }
