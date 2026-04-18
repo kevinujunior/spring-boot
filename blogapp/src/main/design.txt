@@ -1,0 +1,33 @@
+blog-app/
+├─ pom.xml
+├─ src/main/resources/
+│  ├─ application.properties
+├─ src/main/java/com/example/blog/
+│  ├─ BlogApplication.java
+│  ├─ config/
+│  │  ├─ SecurityConfig.java
+│  │  ├─ JwtAuthenticationFilter.java
+│  │  └─ JwtUtil.java
+│  ├─ controller/
+│  │  ├─ AuthController.java
+│  │  ├─ PostController.java
+│  │  └─ CommentController.java
+│  ├─ dto/
+│  │  ├─ AuthReq.java
+│  │  ├─ AuthResp.java
+│  │  ├─ PostDto.java
+│  │  └─ CommentDto.java
+│  ├─ model/
+│  │  ├─ User.java
+│  │  ├─ Post.java
+│  │  └─ Comment.java
+│  ├─ repository/
+│  │  ├─ UserRepository.java
+│  │  ├─ PostRepository.java
+│  │  └─ CommentRepository.java
+│  ├─ service/
+│  │  ├─ UserService.java
+│  │  ├─ PostService.java
+│  │  └─ CommentService.java
+│  └─ exception/
+│     └─ ResourceNotFoundException.java
